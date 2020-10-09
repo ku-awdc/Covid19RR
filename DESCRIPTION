@@ -1,0 +1,21 @@
+Package: Covid19RR
+Title: What the Package Does (One Line, Title Case)
+Version: 0.1.0-1
+Authors@R: 
+    person(given = "Matt",
+           family = "Denwood",
+           role = c("aut", "cre"),
+           email = "md@sund.ku.dk")
+Description: What the package does (one paragraph).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown,
+    spelling
+VignetteBuilder: knitr
+Language: en-GB
