@@ -1,0 +1,5 @@
+dat <- preprocess.data(download.data())
+obj <- setup.TMB.object(dat)
+opt <- fit(obj,fix=c(logrsigma=-6))
+plot.fit(dat,opt)
+save.image()
