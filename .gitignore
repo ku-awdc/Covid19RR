@@ -1,8 +1,10 @@
 .Rproj.user
 inst/doc
+releases/
 
 *.o
 *.so
 *.dll
 *.DS_Store
 *.Rapp.history
+*.Rhistory
