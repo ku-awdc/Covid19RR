@@ -1,2 +1,8 @@
 .Rproj.user
 inst/doc
+
+*.o
+*.so
+*.dll
+*.DS_Store
+*.Rapp.history

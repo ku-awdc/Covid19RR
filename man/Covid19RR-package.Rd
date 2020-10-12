@@ -8,6 +8,18 @@
 \description{
 What the package does (one paragraph).
 }
+\examples{
+dat <- preprocess.data(download.data())
+obj <- setup.TMB.object(dat)
+opt <- fit(obj,fix=c(logrsigma=-6))
+plot_fit(dat,opt)
+save.image()
+
+# Or to launch the shiny whatsit:
+\dontrun{
+launch_shiny("RRest")
+}
+}
 \author{
 \strong{Maintainer}: Uffe Thygesen \email{uhth@dtu.dk}
 

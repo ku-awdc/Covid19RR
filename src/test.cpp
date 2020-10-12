@@ -19,7 +19,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(nTests);
   DATA_VECTOR(nPos);
   DATA_INTEGER(modelswitch);
-  
+
   PARAMETER_VECTOR(logI);
   PARAMETER_VECTOR(logr);
   // PARAMETER_VECTOR(resI);
@@ -36,7 +36,7 @@ Type objective_function<Type>::operator() ()
   int nT = nTests.size();
 
   vector<Type> Epos(nT);
-  
+
   Type ans = 0;
 
   for(int i=0; i<nT ; ++i)
@@ -61,7 +61,7 @@ Type objective_function<Type>::operator() ()
 	}
       // ans -= dnorm(resr(i-1),Type(0),rsigmares,1);
     }
-  
+
   for(int i = 2; i<nT ; ++i)
     {
       switch(modelswitch)
@@ -77,6 +77,6 @@ Type objective_function<Type>::operator() ()
     }
 
   ADREPORT(Epos);
-  
+
   return(ans);
 }
