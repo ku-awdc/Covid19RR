@@ -67,9 +67,9 @@ setup.TMB.object <- function(dat)
                        beta = 1,
                        logIsigma = -8,
                        logIzeta = log(1),
-                       logIsigmaRes = -6,
+##                       logIsigmaRes = -6,
                        logrsigma = -4,
-                       logrsigmares = -5,
+##                       logrsigmares = -5,
                        logrzeta = log(1))
 
 
@@ -154,8 +154,8 @@ plot_fit <- function(dat,opt,pngfile=NULL)
     ## TODO: 4.7
     plot(dat$Date[-1],opt$est$logr*4.7+1)
     plot(dat$Date,opt$repest$Epos)
-    lines(dat$Date,dat$nPos)
-    matplot(dat$Date,cbind(dat$nPos,exp(opt$est$logI),dat$nTests^opt$solution["beta"]),log="y",type="l")
+    lines(dat$Date,dat$NewPositive)
+    matplot(dat$Date,cbind(dat$NewPositive,exp(opt$est$logI),dat$NotPrevPos^opt$solution["beta"]),log="y",type="l")
 
     (opt$objective)
 
