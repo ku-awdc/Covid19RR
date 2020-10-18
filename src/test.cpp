@@ -22,15 +22,10 @@ Type objective_function<Type>::operator() ()
 
   PARAMETER_VECTOR(logI);
   PARAMETER_VECTOR(logr);
-  // PARAMETER_VECTOR(resI);
-  // PARAMETER_VECTOR(resr);
 
   PARAMETER(beta);
   PARAMETER(logIsigma);    Type Isigma    = exp(logIsigma);
-  PARAMETER(logIzeta);     Type Izeta     = exp(logIzeta);
-  // PARAMETER(logIsigmaRes); Type IsigmaRes = exp(logIsigmaRes);
-  PARAMETER(logrsigma);    Type rsigma    = exp(logrsigma);
-  // PARAMETER(logrsigmares); Type rsigmares = exp(logrsigmares);
+  PARAMETER(logtau);       Type rsigma    = exp(logIsigma - logtau);
   PARAMETER(logrzeta);     Type rzeta     = exp(logrzeta);
 
   int nT = nTests.size();
@@ -42,24 +37,13 @@ Type objective_function<Type>::operator() ()
   for(int i=0; i<nT ; ++i)
     {
       Epos(i) = exp(logI(i)+beta*log(nTests(i))); // +resI(i));
-      // ans -= dnorm(resI(i),Type(0),IsigmaRes,1);
-      // ans -= dnorm(log(nPos(i)),log(Epos(i)),1/sqrt(nPos(i)),1);
       ans -= dpois(nPos(i),Epos(i),1);
     }
 
   for(int i = 1; i<nT ; ++i)
     {
-      switch(modelswitch)
-	{
-	case 1:
-	  ans -= dhyperbolic(logI(i)-logI(i-1)-logr(i-1),Isigma,Izeta,1); // -resr(i-1)
-	  break;
-	case 2:
-	  ans -= dnorm(logI(i)-logI(i-1)-logr(i-1),Type(0),Isigma,1);  // -resr(i-1)
-	  ans += pow(logIzeta,2);
-	  break;
-	}
-      // ans -= dnorm(resr(i-1),Type(0),rsigmares,1);
+      // ans -= dhyperbolic(logI(i)-logI(i-1)-logr(i-1),Isigma,Izeta,1); 
+      ans -= dnorm(logI(i)-logI(i-1)-logr(i-1),Type(0),Isigma,1);  
     }
 
   for(int i = 2; i<nT ; ++i)

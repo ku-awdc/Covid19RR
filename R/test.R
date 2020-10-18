@@ -24,6 +24,8 @@ download.data <- function()
         str_replace_all(" ", "")
     dat <- readr::read_delim(paste(text, collapse='\n'), delim=";", locale=readr::locale(decimal_mark=",", grouping_mark='.'))
 
+    dat <- head(dat,-2)
+    
     return(dat)
 
 }
@@ -62,20 +64,14 @@ setup.TMB.object <- function(dat)
 
     parameters <- list(logI = numeric(nrow(dat)),
                        logr = numeric(nrow(dat)-1),
-##                       resI = numeric(nrow(dat)),
-##                       resr = numeric(nrow(dat)-1),
                        beta = 1,
                        logIsigma = -8,
-                       logIzeta = log(1),
-##                       logIsigmaRes = -6,
-                       logrsigma = -4,
-##                       logrsigmares = -5,
+                       logtau = log(10),
                        logrzeta = log(1))
 
 
     fixed <- as.factor(NA)
-#    map <- c(map,list(logIzeta=fixed,logrzeta=fixed))
-    map <- list(logIzeta=fixed,logrzeta=fixed)
+    map <- list(logrzeta=fixed)
 
     obj <- MakeADFun(data, parameters, DLL="Covid19RR",
                      map = map,
@@ -101,8 +97,8 @@ fit <- function(obj,fix=NULL)
                  print_level=3,
                  local_opts= list(algorithm="NLOPT_LD_AUGLAG_EQ",xtol_rel=1e-4))
 
-    lb <- c(0,rep(-10,length(obj$par)-1-length(fix)))
-    ub <- c(1,rep(  0,length(obj$par)-1-length(fix)))
+    lb <- c(0,-10,log(1))
+    ub <- c(1,0,log(100))
 
     fix.indeces <- names(obj$par) %in% names(fix)
 
@@ -124,7 +120,7 @@ fit <- function(obj,fix=NULL)
         return(obj$gr(pp)[!fix.indeces])
     }
 
-    opt <- nloptr(par,fn,gr,lb=lb,ub=ub,opts=opts)
+    opt <- nloptr(par,fn,gr,lb=lb[!fix.indeces],ub=ub[!fix.indeces],opts=opts)
     names(opt$solution) <- names(obj$par[!fix.indeces])
     rep <- sdreport(obj)
 
@@ -183,7 +179,7 @@ plot_fit <- function(dat,opt,pngfile=NULL)
     ## TODO: 4.7 is conversion growth to RR
     ##       -7 is lag from infection to test
     r2R <- function(r) 4.7*r+1
-    plot(dat$Date[-1]-7,r2R(opt$est$logr),xlab="Dat0",ylab="",main="Kontakttal R",type="n",ylim=c(0.5,1.5))
+    plot(dat$Date[-1]-7,r2R(opt$est$logr),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=c(0.5,1.5))
     cu <- opt$est$logr+opt$sd$logr
     cl <- opt$est$logr-opt$sd$logr
     my.poly(dat$Date[-1],r2R(cl),y2=r2R(cu),col="grey")

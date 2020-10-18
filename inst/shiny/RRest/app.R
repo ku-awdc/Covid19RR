@@ -19,12 +19,12 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins
    sidebarLayout(
       sidebarPanel(
-         sliderInput("logrsigma",
-                     "Noise level for R [log scale]",
-                     min = -10,
-                     max = 0,
-                     step = 0.1,
-                     value=-5)
+         sliderInput("tau",
+                     "Time horizon for smoothing",
+                     min = 3,
+                     max = 60,
+                     step = 1,
+                     value=10)
       ),
 
       # Show a plot of the generated distribution
@@ -40,7 +40,7 @@ server <- function(input, output) {
 	   
        obj <- setup.TMB.object(dat)
 
-       opt <- fit(obj,fix=c(logrsigma=input$logrsigma))
+       opt <- fit(obj,fix=c(logtau=log(input$tau)))
 
        plot_fit(dat,opt)
    })
