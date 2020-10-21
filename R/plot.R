@@ -1,4 +1,4 @@
-#' @importFrom graphics plot par lines matplot polygon grid
+#' @importFrom graphics plot par lines matplot polygon grid text
 #' @importFrom grDevices png dev.off
 plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 {
@@ -23,17 +23,17 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
         if(is.null(y2)) y2 <- numeric(length(y1))
         polygon(c(x1,rev(x2)),c(y1,rev(y2)),...)
     }
-    
+
     if(!is.null(pngfile)) png(filename=pngfile,width=840)
-    
+
     par(mfrow=c(1,2))
     cl <- opt$est$logI - opt$sd$logI
     cu <- opt$est$logI + opt$sd$logI
-    
+
     ## TODO:  50000 / 50.000 daglige is multiplication factor
-    faktor <- 50000^opt$opt$solution["beta"]
+    faktor <- settings$tests^opt$opt$solution["beta"]
     plot(dat$Date,exp(cl),type="n",ylim=faktor*exp(range(c(cl,cu))),xlab="Dato",ylab="",log="",
-         main="Antal positive ved 50.000 daglige tests")
+    		 main=paste0("Antal positive ved ", format(settings$tests, big.mark=".", decimal.mark=","), " daglige tests"))
     my.poly(dat$Date,faktor*exp(cl),y2=faktor*exp(cu),col="grey")
     lines(dat$Date,faktor*exp(opt$est$logI))
     grid()
@@ -72,8 +72,8 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
     	my.poly(dat$Date[-1],r2R(cl),y2=r2R(cu),col="grey")
     	lines(dat$Date[-1],r2R(opt$est$r))
     	grid()
-	
+
 	}
-    
+
     if(!is.null(pngfile)) dev.off()
 }
