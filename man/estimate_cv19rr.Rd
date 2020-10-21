@@ -4,7 +4,7 @@
 \alias{estimate_cv19rr}
 \title{Estimation of RR}
 \usage{
-estimate_cv19rr(dat, parameters = NULL, fix = NULL, ...)
+estimate_cv19rr(dat, parameters = NULL, fix = NULL, silent = FALSE, ...)
 }
 \arguments{
 \item{dat}{Incidence data}
@@ -12,6 +12,8 @@ estimate_cv19rr(dat, parameters = NULL, fix = NULL, ...)
 \item{parameters}{Option to override the default parameter values}
 
 \item{fix}{Option to override the default fixed values}
+
+\item{silent}{Option to suppress messages during fitting}
 
 \item{...}{Other arguments provided for compatibility with \code{\link[EpiEstim]{estimate_R}} but currently ignored}
 }

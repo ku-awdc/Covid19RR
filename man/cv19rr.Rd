@@ -9,7 +9,16 @@
 \usage{
 \method{print}{cv19rr}(x, ...)
 
-\method{plot}{cv19rr}(x, pngfile = NULL, ...)
+\method{plot}{cv19rr}(
+  x,
+  growth = 4.7,
+  tests = 50000,
+  lag = 7,
+  ylim = c(0.5, 1.5),
+  page = 2,
+  pngfile = NULL,
+  ...
+)
 
 \method{autoplot}{cv19rr}(object, ...)
 }
@@ -17,6 +26,16 @@
 \item{x}{An object of class cv19rr}
 
 \item{...}{Other arguments provided for compatibility with S3 methods}
+
+\item{growth}{Growth parameter}
+
+\item{tests}{Number of tests to normalise against}
+
+\item{lag}{Lag parameter}
+
+\item{ylim}{Limits for the y axis of the Kontakttal R plot}
+
+\item{page}{Which page of plots to display (1, 2 or both)}
 
 \item{pngfile}{An optional pngfile to use}
 

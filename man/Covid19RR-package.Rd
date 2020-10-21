@@ -21,7 +21,7 @@ save.image()
 ## Old version using internal (now non-exported) code:
 obj <- Covid19RR:::setup.TMB.object(dat)
 opt <- Covid19RR:::fit(obj,fix=c(logrsigma=-6))
-Covid19RR:::plot_fit(dat,opt)
+Covid19RR:::plot.cv19rr(list(dat=dat,opt=opt))
 save.image()
 
 # Or to launch the shiny whatsit:

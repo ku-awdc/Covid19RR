@@ -16,7 +16,7 @@ preprocess.data <- function(dat)
 
 
 #' @importFrom TMB MakeADFun sdreport
-setup.TMB.object <- function(dat, parameters=NULL)
+setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
 {
 	data <- list(nTests = dat$NotPrevPos,
 							 nPos = dat$NewPositive,
@@ -47,19 +47,20 @@ setup.TMB.object <- function(dat, parameters=NULL)
 
 	obj <- MakeADFun(data, parameters, DLL="Covid19RR",
 									 map = map,
-									 random=c("logI","logr"))  # "resI","resr"
+									 random=c("logI","logr"),  # "resI","resr"
+									 silent = silent)
 
 	return(obj)
 }
 
 
 #' @importFrom nloptr nloptr
-fit <- function(obj, fix=NULL)
+fit <- function(obj, fix=NULL, silent=FALSE)
 {
 	opts <- list(algorithm="NLOPT_LD_AUGLAG",
 							 xtol_abs=1e-12,
 							 maxeval=2E+4,
-							 print_level=3,
+							 print_level=if(silent) 0 else 3,
 							 local_opts= list(algorithm="NLOPT_LD_AUGLAG_EQ",xtol_rel=1e-4))
 
 	lb <- c(0,-10,log(1))

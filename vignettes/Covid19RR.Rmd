@@ -14,15 +14,53 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library("Covid19RR")
+## Estimation using EpiEstim:
+
+```{r fig.height=8, fig.width=6}
+library("EpiEstim")
+data(Flu2009)
+head(Flu2009$incidence)
+res_epiestim_flu <- estimate_R(Flu2009$incidence, 
+                                method="parametric_si",
+                                config = make_config(list(
+                                  mean_si = 2.6, 
+                                  std_si = 1.5))
+)
+plot(res_epiestim_flu)
 ```
 
-TODO: better vignette with comparison to EpiEstim etc
+```{r fig.height=8, fig.width=6}
+cv19dat <- Covid19RR::download_data()
+cv19dat$dates <- cv19dat$Date
+cv19dat$I <- cv19dat$NewPositive
+res_epiestim_cv19 <- estimate_R(cv19dat,
+                           method="parametric_si",
+                           config = make_config(list(
+                                  mean_si = 2.6, 
+                                  std_si = 1.5))
+)
+plot(res_epiestim_cv19)                           
+```
+
+## Estimation using the new R package:
 
 ```{r}
-dat <- download_data()
-mod <- estimate_cv19rr(dat)
+library("Covid19RR")
+
+Flu2009_cv19rr <- Flu2009$incidence
+names(Flu2009_cv19rr) <- c("Date", "NewPositive")
+# Make up a constant:
+Flu2009_cv19rr$NotPrevPos <- 100
+
+res_cv19rr_flu <- estimate_cv19rr(Flu2009_cv19rr, silent=TRUE)
+# Gives an error:
+# plot(res_cv19rr_flu)
+```
+
+```{r fig.height=4, fig.width=8}
+res_cv19rr_cv19 <- estimate_cv19rr(cv19dat, silent=TRUE)
+plot(res_cv19rr_cv19, page=1)
+plot(res_cv19rr_cv19, page=2)
 ```
 
 ```{r}
