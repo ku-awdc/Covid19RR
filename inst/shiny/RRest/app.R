@@ -1,14 +1,14 @@
 ## Shiny to check the effect of the smoothing
 
-library(shiny)
-library(shinydashboard)
+library("shiny")
+library("shinydashboard")
 #library(shinyalert)
-library(plotly)
-library(shinyWidgets)
+library("plotly")
+library("shinyWidgets")
 
 library('Covid19RR')
 
-dat <- preprocess.data(download.data())
+dat <- download_data()
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -37,12 +37,10 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
    output$fitPlot <- renderPlot({
-	   
-       obj <- setup.TMB.object(dat)
 
-       opt <- fit(obj,fix=c(logtau=log(input$tau)))
+      mod <- estimate_cv19rr(dat, fix=c(logtau=log(input$tau)))
+      plot(mod)
 
-       plot_fit(dat,opt)
    })
 }
 

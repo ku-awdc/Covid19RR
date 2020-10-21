@@ -11,8 +11,10 @@
 #' TODO
 #' The apps that are currently available are:
 #'
-#' @example
+#' @examples
+#' \dontrun{
 #' launch_shiny('RRest')
+#' }
 #'
 #' @importFrom shiny runApp
 #'
@@ -43,7 +45,7 @@ launch_shiny <- function(appname, ...){
 		stop("Additional packages must be installed for the specified shiny app - you should run:", iptext(pn), call. = FALSE)
 	}
 
-	shiny::runApp(appDir=file.path(ad, appname), ...)
+	runApp(appDir=file.path(ad, appname), ...)
 
 }
 

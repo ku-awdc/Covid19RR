@@ -1,15 +1,28 @@
 #' @keywords internal
 #' @useDynLib Covid19RR
 #' @examples
-#' dat <- preprocess.data(download.data())
-#' obj <- setup.TMB.object(dat)
-#' opt <- fit(obj,fix=c(logrsigma=-6))
-#' plot_fit(dat,opt)
+#' ## Using the interface:
+#' dat <- download_data()
+#' mod <- estimate_cv19rr(dat)
+#' # Or with non-default parameters or fix:
+#' mod <- estimate_cv19rr(dat, parameters=list(beta=1), fix=c(logrsigma=-6))
+#' plot(mod)
+#' save.image()
+#'
+#' ## Old version using internal (now non-exported) code:
+#' obj <- Covid19RR:::setup.TMB.object(dat)
+#' opt <- Covid19RR:::fit(obj,fix=c(logrsigma=-6))
+#' Covid19RR:::plot_fit(dat,opt)
 #' save.image()
 #'
 #' # Or to launch the shiny whatsit:
 #' \dontrun{
 #' launch_shiny("RRest")
+#' }
+#'
+#' # Or to read the vignette:
+#' \dontrun{
+#' vignette("Covid19RR")
 #' }
 
 "_PACKAGE"

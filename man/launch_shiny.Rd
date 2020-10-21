@@ -18,3 +18,9 @@ This function provides a convinient way in which to launch one of the interactiv
 TODO
 The apps that are currently available are:
 }
+\examples{
+\dontrun{
+launch_shiny('RRest')
+}
+
+}
