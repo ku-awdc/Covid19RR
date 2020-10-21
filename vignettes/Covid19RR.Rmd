@@ -15,5 +15,18 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(Covid19RR)
+library("Covid19RR")
 ```
+
+TODO: better vignette with comparison to EpiEstim etc
+
+```{r}
+dat <- download_data()
+mod <- estimate_cv19rr(dat)
+```
+
+```{r}
+# TODO: set height/width to avoid error about figure margins
+# plot(mod)
+```
+

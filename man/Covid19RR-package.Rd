@@ -6,18 +6,32 @@
 \alias{Covid19RR-package}
 \title{Covid19RR: Estimation of Reproduction Rates for the COVID-19 Pandemic in Denmark based on Publicly Available Data}
 \description{
-What the package does (one paragraph).
+Implementation of a model used by the expert modelling group for use
+            by SSI and others.
 }
 \examples{
-dat <- preprocess.data(download.data())
-obj <- setup.TMB.object(dat)
-opt <- fit(obj,fix=c(logrsigma=-6))
-plot_fit(dat,opt)
+## Using the interface:
+dat <- download_data()
+mod <- estimate_cv19rr(dat)
+# Or with non-default parameters or fix:
+mod <- estimate_cv19rr(dat, parameters=list(beta=1), fix=c(logrsigma=-6))
+plot(mod)
+save.image()
+
+## Old version using internal (now non-exported) code:
+obj <- Covid19RR:::setup.TMB.object(dat)
+opt <- Covid19RR:::fit(obj,fix=c(logrsigma=-6))
+Covid19RR:::plot_fit(dat,opt)
 save.image()
 
 # Or to launch the shiny whatsit:
 \dontrun{
 launch_shiny("RRest")
+}
+
+# Or to read the vignette:
+\dontrun{
+vignette("Covid19RR")
 }
 }
 \author{
