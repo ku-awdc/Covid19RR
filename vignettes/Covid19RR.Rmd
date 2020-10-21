@@ -53,18 +53,12 @@ names(Flu2009_cv19rr) <- c("Date", "NewPositive")
 Flu2009_cv19rr$NotPrevPos <- 100
 
 res_cv19rr_flu <- estimate_cv19rr(Flu2009_cv19rr, silent=TRUE)
-# Gives an error:
+# Gives an error about lack of finite ylim values:
 # plot(res_cv19rr_flu)
 ```
 
 ```{r fig.height=4, fig.width=8}
 res_cv19rr_cv19 <- estimate_cv19rr(cv19dat, silent=TRUE)
-plot(res_cv19rr_cv19, page=1)
-plot(res_cv19rr_cv19, page=2)
-```
-
-```{r}
-# TODO: set height/width to avoid error about figure margins
-# plot(mod)
+plot(res_cv19rr_cv19)
 ```
 

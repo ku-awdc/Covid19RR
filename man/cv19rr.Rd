@@ -11,11 +11,11 @@
 
 \method{plot}{cv19rr}(
   x,
-  growth = 4.7,
+  gen_time = 4.7,
   tests = 50000,
   lag = 7,
   ylim = c(0.5, 1.5),
-  page = 2,
+  page = 3,
   pngfile = NULL,
   ...
 )
@@ -27,7 +27,7 @@
 
 \item{...}{Other arguments provided for compatibility with S3 methods}
 
-\item{growth}{Growth parameter}
+\item{gen_time}{Generation time (growth?) parameter}
 
 \item{tests}{Number of tests to normalise against}
 
@@ -35,7 +35,7 @@
 
 \item{ylim}{Limits for the y axis of the Kontakttal R plot}
 
-\item{page}{Which page of plots to display (1, 2 or both)}
+\item{page}{Which page of plots to display (1, 2, 3 or multiple)}
 
 \item{pngfile}{An optional pngfile to use}
 
