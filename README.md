@@ -6,3 +6,4 @@ Estimation of reproduction rates for the COVID-19 pandemic in Denmark based on p
 - Improve documentation
 - Write vignette
 - Print and autoplot methods
+- Write tests
