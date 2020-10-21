@@ -21,7 +21,7 @@ Type objective_function<Type>::operator() ()
   DATA_INTEGER(modelswitch);
 
   PARAMETER_VECTOR(logI);
-  PARAMETER_VECTOR(logr);
+  PARAMETER_VECTOR(r);
 
   PARAMETER(beta);
   PARAMETER(logIsigma);    Type Isigma    = exp(logIsigma);
@@ -42,8 +42,8 @@ Type objective_function<Type>::operator() ()
 
   for(int i = 1; i<nT ; ++i)
     {
-      // ans -= dhyperbolic(logI(i)-logI(i-1)-logr(i-1),Isigma,Izeta,1); 
-      ans -= dnorm(logI(i)-logI(i-1)-logr(i-1),Type(0),Isigma,1);  
+      // ans -= dhyperbolic(logI(i)-logI(i-1)-r(i-1),Isigma,Izeta,1); 
+      ans -= dnorm(logI(i)-logI(i-1)-r(i-1),Type(0),Isigma,1);  
     }
 
   for(int i = 2; i<nT ; ++i)
@@ -51,10 +51,10 @@ Type objective_function<Type>::operator() ()
       switch(modelswitch)
 	{
 	case 1:
-	  ans -= dhyperbolic(logr(i-1)-logr(i-2),rsigma,rzeta,1);
+	  ans -= dhyperbolic(r(i-1)-r(i-2),rsigma,rzeta,1);
 	  break;
 	case 2:
-	  ans -= dnorm(logr(i-1)-logr(i-2),Type(0),rsigma,1);
+	  ans -= dnorm(r(i-1)-r(i-2),Type(0),rsigma,1);
 	  ans += pow(logrzeta,2);
 	  break;
 	}

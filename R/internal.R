@@ -33,7 +33,7 @@ setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
 		setup <- c(setup, parameters)
 	}
 	parameters <- c(list(logI = numeric(nrow(dat)),
-										 logr = numeric(nrow(dat)-1)
+										 r = numeric(nrow(dat)-1)
 										 ), setup)
 
 	fixed <- as.factor(NA)
@@ -47,7 +47,7 @@ setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
 
 	obj <- MakeADFun(data, parameters, DLL="Covid19RR",
 									 map = map,
-									 random=c("logI","logr"),  # "resI","resr"
+									 random=c("logI","r"),
 									 silent = silent)
 
 	return(obj)
