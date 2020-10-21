@@ -63,7 +63,7 @@ setup.TMB.object <- function(dat)
                  modelswitch = 2)
 
     parameters <- list(logI = numeric(nrow(dat)),
-                       logr = numeric(nrow(dat)-1),
+                       r = numeric(nrow(dat)-1),
                        beta = 1,
                        logIsigma = -8,
                        logtau = log(10),
@@ -75,7 +75,7 @@ setup.TMB.object <- function(dat)
 
     obj <- MakeADFun(data, parameters, DLL="Covid19RR",
                      map = map,
-                     random=c("logI","logr"))  # "resI","resr"
+                     random=c("logI","r"))  # "resI","resr"
 
     return(obj)
 }
@@ -148,7 +148,7 @@ plot_fit <- function(dat,opt,pngfile=NULL)
     par(mfrow=c(2,2))
     plot(dat$Date,opt$est$logI)
     ## TODO: 4.7
-    plot(dat$Date[-1],opt$est$logr*4.7+1)
+    plot(dat$Date[-1],opt$est$r*4.7+1)
     plot(dat$Date,opt$repest$Epos)
     lines(dat$Date,dat$NewPositive)
     matplot(dat$Date,cbind(dat$NewPositive,exp(opt$est$logI),dat$NotPrevPos^opt$solution["beta"]),log="y",type="l")
@@ -162,7 +162,7 @@ plot_fit <- function(dat,opt,pngfile=NULL)
         polygon(c(x1,rev(x2)),c(y1,rev(y2)),...)
     }
 
-    if(!is.null(pngfile)) png(file="Inc-R.png",width=840)
+    if(!is.null(pngfile)) png(file=pngfile,width=840)
 
     par(mfrow=c(1,2))
     cl <- opt$est$logI - opt$sd$logI
@@ -175,15 +175,19 @@ plot_fit <- function(dat,opt,pngfile=NULL)
     my.poly(dat$Date,faktor*exp(cl),y2=faktor*exp(cu),col="grey")
     lines(dat$Date,faktor*exp(opt$est$logI))
     grid()
+    betahat <- round(opt$opt$solution["beta"],digits=2)
+    betacl <- round(opt$opt$solution["beta"] - 2*opt$sd$beta,digits=2)
+    betacu <- round(opt$opt$solution["beta"] + 2*opt$sd$beta,digits=2)
+    text(mean(dat$Date),faktor*exp(max(cu)),bquote(beta == .(betahat)~(.(betacl)*","*.(betacu))))
 
     ## TODO: 4.7 is conversion growth to RR
     ##       -7 is lag from infection to test
     r2R <- function(r) 4.7*r+1
-    plot(dat$Date[-1]-7,r2R(opt$est$logr),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=c(0.5,1.5))
-    cu <- opt$est$logr+opt$sd$logr
-    cl <- opt$est$logr-opt$sd$logr
+    plot(dat$Date[-1]-7,r2R(opt$est$r),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=c(0.5,1.5))
+    cu <- opt$est$r+opt$sd$r
+    cl <- opt$est$r-opt$sd$r
     my.poly(dat$Date[-1],r2R(cl),y2=r2R(cu),col="grey")
-    lines(dat$Date[-1],r2R(opt$est$logr))
+    lines(dat$Date[-1],r2R(opt$est$r))
     grid()
 
     if(!is.null(pngfile)) dev.off()
