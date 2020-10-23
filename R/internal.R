@@ -28,7 +28,14 @@ setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
 		logtau = log(10),
 		logrzeta = log(1)
 	)
+
 	if(!is.null(parameters)){
+		if(any(!names(parameters) %in% names(setup))){
+			warning("The following invalid parameter names were ignored: ", names(parameters)[!names(parameters) %in% names(setup)])
+			parameters <- parameters[names(parameters) %in% names(setup)]
+		}
+		stopifnot(all(names(parameters) %in% names(setup)))
+
 		setup[names(setup) %in% names(parameters)] <- NULL
 		setup <- c(setup, parameters)
 	}
@@ -67,8 +74,10 @@ fit <- function(obj, fix=NULL, silent=FALSE)
 	ub <- c(1,0,log(100))
 
 	fix.indeces <- names(obj$par) %in% names(fix)
-
-	obj$par[fix.indeces] <- fix
+	obj$par[fix.indeces] <- fix[names(fix) %in% names(obj$par)]
+	if(any(!names(fix) %in% names(obj$par))){
+		warning("The following invalid fix names were ignored: ", names(fix)[!names(fix) %in% names(obj$par)])
+	}
 
 	par <- obj$par[!fix.indeces]
 

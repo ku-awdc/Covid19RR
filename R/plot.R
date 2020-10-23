@@ -3,55 +3,59 @@
 plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 {
 
+	## TODO: clean up pngfile and page arguments (do we need these?)
+
+	## If we want page number 1 of plots:
 	if(1 %in% page){
 		par(mfrow=c(2,2))
 		plot(dat$Date,opt$est$logI)
 		plot(dat$Date[-1],opt$est$logr*settings$gen_time+1)
 		plot(dat$Date,opt$repest$Epos)
 		lines(dat$Date,dat$NewPositive)
-		matplot(dat$Date,cbind(dat$NewPositive,exp(opt$est$logI),dat$NotPrevPos^opt$solution["beta"]),log="y",type="l")
+		matplot(dat$Date,cbind(dat$NewPositive,exp(opt$est$logI),dat$NotPrevPos^settings$beta),log="y",type="l")
 	}
 
-    ## TODO: 4.7 is the generation time. Is this the right conversion?
+	## TODO: 4.7 is the generation time. Is this the right conversion?
 	gen_time <- settings$gen_time
-    r2R <- function(r) gen_time*r+1
+	r2R <- function(r) gen_time*r+1
 
 
-    my.poly <- function(x1,y1,x2=NULL,y2=NULL,...)
-    {
-        if(is.null(x2)) x2 <- x1
-        if(is.null(y2)) y2 <- numeric(length(y1))
-        polygon(c(x1,rev(x2)),c(y1,rev(y2)),...)
-    }
+	my.poly <- function(x1,y1,x2=NULL,y2=NULL,...)
+	{
+		if(is.null(x2)) x2 <- x1
+		if(is.null(y2)) y2 <- numeric(length(y1))
+		polygon(c(x1,rev(x2)),c(y1,rev(y2)),...)
+	}
 
-    if(!is.null(pngfile)) png(filename=pngfile,width=840)
+	if(!is.null(pngfile)) png(filename=pngfile,width=840)
 
-    par(mfrow=c(1,2))
-    cl <- opt$est$logI - opt$sd$logI
-    cu <- opt$est$logI + opt$sd$logI
+	par(mfrow=c(1,2))
+	cl <- opt$est$logI - opt$sd$logI
+	cu <- opt$est$logI + opt$sd$logI
 
-    ## settings$tests is multiplication factor
-    faktor <- settings$tests^opt$opt$solution["beta"]
-    ## TODO: if the upper CI is infinite then go with 10 * the number of tests ... sensible?
-    tyl <- pmin(faktor*10, faktor*exp(range(c(cl,cu))))
-    plot(dat$Date,exp(cl),type="n",ylim=tyl,xlab="Dato",ylab="",log="",
-    		 main=paste0("Antal positive ved ", format(settings$tests, big.mark=".", decimal.mark=","), " daglige tests"))
-    my.poly(dat$Date,faktor*exp(cl),y2=faktor*exp(cu),col="grey")
-    lines(dat$Date,faktor*exp(opt$est$logI))
-    grid()
-    betahat <- round(opt$opt$solution["beta"],digits=2)
-    betacl <- round(opt$opt$solution["beta"] - 2*opt$sd$beta,digits=2)
-    betacu <- round(opt$opt$solution["beta"] + 2*opt$sd$beta,digits=2)
-    text(mean(dat$Date),faktor*exp(max(cu)),bquote(beta == .(betahat)~(.(betacl)*","*.(betacu))))
+	## settings$tests is multiplication factor
+	faktor <- settings$tests^settings$beta
+	## TODO: if the upper CI is infinite then go with 10 * the number of tests ... sensible?
+	tyl <- pmin(faktor*10, faktor*exp(range(c(cl,cu))))
+	plot(dat$Date,exp(cl),type="n",ylim=tyl,xlab="Dato",ylab="",log="",
+			 main=paste0("Antal positive ved ", format(settings$tests, big.mark=".", decimal.mark=","), " daglige tests"))
+	my.poly(dat$Date,faktor*exp(cl),y2=faktor*exp(cu),col="grey")
+	lines(dat$Date,faktor*exp(opt$est$logI))
+	grid()
+	betahat <- round(settings$beta,digits=2)
+	betacl <- round(settings$beta - 2*settings$beta_sd,digits=2)
+	betacu <- round(settings$beta + 2*settings$beta_sd,digits=2)
+	text(mean(dat$Date),faktor*exp(max(cu)),bquote(beta == .(betahat)~(.(betacl)*","*.(betacu))))
 
 	if(!is.null(pngfile)) png(filename="Inc-R.png",width=840)
 
+	## If we want page number 2 of plots:
 	if(2 %in% page){
 		par(mfrow=c(1,2))
 		cl <- opt$est$logI - opt$sd$logI
 		cu <- opt$est$logI + opt$sd$logI
 
-		faktor <- settings$tests^opt$opt$solution["beta"]
+		faktor <- settings$tests^settings$beta
 		plot(dat$Date,exp(cl),type="n",ylim=faktor*exp(range(c(cl,cu))),xlab="Dato",ylab="",log="",
 				 main=paste0("Antal positive ved ", format(settings$tests, big.mark=".", decimal.mark=","), " daglige tests"))
 		my.poly(dat$Date,faktor*exp(cl),y2=faktor*exp(cu),col="grey")
@@ -66,16 +70,17 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 		grid()
 	}
 
+	## If we want page number 3 of plots:
 	if(3 %in% page){
 
 		plot(dat$Date[-1]-settings$lag,r2R(opt$est$r),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=ylim)
-    	cu <- opt$est$r+opt$sd$r
-    	cl <- opt$est$r-opt$sd$r
-    	my.poly(dat$Date[-1],r2R(cl),y2=r2R(cu),col="grey")
-    	lines(dat$Date[-1],r2R(opt$est$r))
-    	grid()
+		cu <- opt$est$r+opt$sd$r
+		cl <- opt$est$r-opt$sd$r
+		my.poly(dat$Date[-1],r2R(cl),y2=r2R(cu),col="grey")
+		lines(dat$Date[-1],r2R(opt$est$r))
+		grid()
 
 	}
 
-    if(!is.null(pngfile)) dev.off()
+	if(!is.null(pngfile)) dev.off()
 }

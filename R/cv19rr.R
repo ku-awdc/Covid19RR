@@ -20,7 +20,7 @@ print.cv19rr <- function(x, ...){
 #' @rdname cv19rr
 #' @export
 plot.cv19rr <- function(x, gen_time = 4.7, tests=50000, lag=7, ylim=c(0.5, 1.5), page = 3, pngfile=NULL, ...){
-	settings <- list(gen_time=gen_time, tests=tests, lag=lag)
+	settings <- list(gen_time=gen_time, tests=tests, lag=lag, beta=x$beta, beta_sd=x$beta_sd)
 	plot_fit(dat=x$dat, opt=x$opt, settings=settings, ylim=ylim, page=page, pngfile=pngfile, ...)
 }
 

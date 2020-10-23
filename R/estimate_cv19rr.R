@@ -28,7 +28,17 @@ estimate_cv19rr <- function(dat, parameters=NULL, fix=NULL, silent=FALSE, ...){
 	obj <- setup.TMB.object(dat, parameters=parameters, silent=silent)
 	opt <- fit(obj, fix=fix, silent=silent)
 
-	rv <- list(dat=dat, opt=opt)
+	# If beta was fixed:
+	if("beta" %in% names(fix)){
+		beta <- fix["beta"]
+		beta_sd <- 0
+	# Otherwise:
+	}else{
+		beta <- opt$opt$solution["beta"]
+		beta_sd <- opt$sd$beta
+	}
+
+	rv <- list(dat=dat, opt=opt, beta=beta, beta_sd=beta_sd)
 	class(rv) <- "cv19rr"
 
 	return(rv)
