@@ -30,9 +30,11 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
     cl <- opt$est$logI - opt$sd$logI
     cu <- opt$est$logI + opt$sd$logI
 
-    ## TODO:  50000 / 50.000 daglige is multiplication factor
+    ## settings$tests is multiplication factor
     faktor <- settings$tests^opt$opt$solution["beta"]
-    plot(dat$Date,exp(cl),type="n",ylim=faktor*exp(range(c(cl,cu))),xlab="Dato",ylab="",log="",
+    ## TODO: if the upper CI is infinite then go with 10 * the number of tests ... sensible?
+    tyl <- pmin(faktor*10, faktor*exp(range(c(cl,cu))))
+    plot(dat$Date,exp(cl),type="n",ylim=tyl,xlab="Dato",ylab="",log="",
     		 main=paste0("Antal positive ved ", format(settings$tests, big.mark=".", decimal.mark=","), " daglige tests"))
     my.poly(dat$Date,faktor*exp(cl),y2=faktor*exp(cu),col="grey")
     lines(dat$Date,faktor*exp(opt$est$logI))
