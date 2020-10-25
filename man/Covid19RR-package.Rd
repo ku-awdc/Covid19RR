@@ -31,11 +31,11 @@ vignette("Covid19RR")
 }
 }
 \author{
-\strong{Maintainer}: Uffe Thygesen \email{uhth@dtu.dk}
+\strong{Maintainer}: Matt Denwood \email{md@sund.ku.dk}
 
 Authors:
 \itemize{
-  \item Matt Denwood \email{md@sund.ku.dk}
+  \item Uffe Thygesen \email{uhth@dtu.dk}
 }
 
 }
