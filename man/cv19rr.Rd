@@ -5,6 +5,7 @@
 \alias{print.cv19rr}
 \alias{plot.cv19rr}
 \alias{autoplot.cv19rr}
+\alias{as.data.frame.cv19rr}
 \title{S3 methods for the cv19rr class}
 \usage{
 \method{print}{cv19rr}(x, ...)
@@ -20,12 +21,25 @@
   ...
 )
 
-\method{autoplot}{cv19rr}(object, ...)
+\method{autoplot}{cv19rr}(
+  object,
+  gen_time = 4.7,
+  lag = 7,
+  caption_date = Sys.Date(),
+  rib_col = "grey85",
+  x_by = 5,
+  xlim = c("2020-03-24", NA),
+  y_marks = waiver(),
+  ylim = c(NA, NA),
+  ...
+)
+
+\method{as.data.frame}{cv19rr}(x, row.names, optional, gen_time = 4.7, lag = 7, ...)
 }
 \arguments{
 \item{x}{An object of class cv19rr}
 
-\item{...}{Other arguments provided for compatibility with S3 methods}
+\item{...}{Unused arguments provided for compatibility with S3 methods}
 
 \item{gen_time}{Generation time (growth?) parameter}
 
@@ -33,14 +47,46 @@
 
 \item{lag}{Lag parameter}
 
-\item{ylim}{Limits for the y axis of the Kontakttal R plot}
+\item{ylim}{Limits for the y axis}
 
 \item{page}{Which page of plots to display (1, 2, 3 or multiple)}
 
 \item{pngfile}{An optional pngfile to use}
 
 \item{object}{An object of class cv19rr}
+
+\item{caption_date}{Date to use in the caption}
+
+\item{rib_col}{Colour for the ribbon}
+
+\item{x_by}{Increment for the date on the x axis}
+
+\item{xlim}{Limits of the x axis (date) - if the second element is blank then the caption date is used as the maximum extent of the range}
+
+\item{y_marks}{Marks to show on the y axis}
+
+\item{row.names}{Unused arguments provided for compatibility with S3 methods}
+
+\item{optional}{Unused arguments provided for compatibility with S3 methods}
 }
 \description{
 S3 methods for the cv19rr class
+}
+\examples{
+library("Covid19RR")
+dat <- download_data()
+mod <- estimate_cv19rr(dat, silent=TRUE)
+require("ggplot2")
+# Replicate figure 12.1:
+autoplot(mod, date = "2020-10-25",
+    y_marks = c(0, 0.5, 1, 1.5, 2), ylim = c(0, 2.5))
+ggsave("figur 12.1.pdf", height=7, width=11)
+# Replicate figure 12.2:
+autoplot(mod, caption_date = "2020-10-25", xlim = c("2020-02-23", NA),
+    y_marks = c(0, 1, 2), ylim = c(0, 3))
+ggsave("figur 12.2.pdf", height=7, width=11)
+
+# To produce graphs from a data frame:
+mydf <- as.data.frame(mod)
+Covid19RR:::autoplot.cv19rr(mydf)
 }

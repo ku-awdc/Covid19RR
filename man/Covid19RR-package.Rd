@@ -12,7 +12,7 @@ Implementation of a model used by the expert modelling group for use
 \examples{
 ## Using the interface:
 dat <- download_data()
-mod <- estimate_cv19rr(dat)
+mod <- estimate_cv19rr(dat, silent=TRUE)
 plot(mod)
 # Or with non-default parameters or fix:
 mod <- estimate_cv19rr(dat, parameters=list(beta=0.7))

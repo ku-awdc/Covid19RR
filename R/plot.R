@@ -15,10 +15,7 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 		matplot(dat$Date,cbind(dat$NewPositive,exp(opt$est$logI),dat$NotPrevPos^settings$beta),log="y",type="l")
 	}
 
-	## TODO: 4.7 is the generation time. Is this the right conversion?
 	gen_time <- settings$gen_time
-	r2R <- function(r) gen_time*r+1
-
 
 	my.poly <- function(x1,y1,x2=NULL,y2=NULL,...)
 	{
@@ -62,22 +59,22 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 		lines(dat$Date,faktor*exp(opt$est$logI))
 		grid()
 
-		plot(dat$Date[-1]-settings$lag,r2R(opt$est$logr),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=ylim)
+		plot(dat$Date[-1]-settings$lag,r2R(opt$est$logr, gen_time),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=ylim)
 		cu <- opt$est$logr+opt$sd$logr
 		cl <- opt$est$logr-opt$sd$logr
-		my.poly(dat$Date[-1],r2R(cl),y2=r2R(cu),col="grey")
-		lines(dat$Date[-1],r2R(opt$est$logr))
+		my.poly(dat$Date[-1],r2R(cl, gen_time),y2=r2R(cu, gen_time),col="grey")
+		lines(dat$Date[-1],r2R(opt$est$logr, gen_time))
 		grid()
 	}
 
 	## If we want page number 3 of plots:
 	if(3 %in% page){
 
-		plot(dat$Date[-1]-settings$lag,r2R(opt$est$r),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=ylim)
+		plot(dat$Date[-1]-settings$lag,r2R(opt$est$r, gen_time),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=ylim)
 		cu <- opt$est$r+opt$sd$r
 		cl <- opt$est$r-opt$sd$r
-		my.poly(dat$Date[-1],r2R(cl),y2=r2R(cu),col="grey")
-		lines(dat$Date[-1],r2R(opt$est$r))
+		my.poly(dat$Date[-1],r2R(cl, gen_time),y2=r2R(cu, gen_time),col="grey")
+		lines(dat$Date[-1],r2R(opt$est$r, gen_time))
 		grid()
 
 	}

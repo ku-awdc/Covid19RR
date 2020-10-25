@@ -108,3 +108,5 @@ fit <- function(obj, fix=NULL, silent=FALSE)
 	return(list(opt=opt,est=est,sd=sd,repest=repest,repsd=repsd))
 }
 
+## TODO: 4.7 is the generation time. Is this the right conversion?
+r2R <- function(r, gen_time) gen_time*r+1
