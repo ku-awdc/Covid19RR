@@ -36,13 +36,12 @@ Type objective_function<Type>::operator() ()
 
   for(int i=0; i<nT ; ++i)
     {
-      Epos(i) = exp(logI(i)+beta*log(nTests(i))); // +resI(i));
+      Epos(i) = exp(logI(i)+beta*log(nTests(i))); 
       ans -= dpois(nPos(i),Epos(i),1);
     }
 
   for(int i = 1; i<nT ; ++i)
     {
-      // ans -= dhyperbolic(logI(i)-logI(i-1)-r(i-1),Isigma,Izeta,1); 
       ans -= dnorm(logI(i)-logI(i-1)-r(i-1),Type(0),Isigma,1);  
     }
 
