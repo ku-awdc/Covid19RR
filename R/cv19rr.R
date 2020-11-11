@@ -43,7 +43,7 @@ print.cv19rr <- function(x, ...){
 
 #' @rdname cv19rr
 #' @export
-plot.cv19rr <- function(x, r2R = function(r) 1+4.7*r,tests=50000, lag=7, page = 3,
+plot.cv19rr <- function(x, r2R = function(r) 1+4.7*r,tests=50000, lag=7, page = c(1,2),
                         main = "Kontakttal R",...){
 	settings <- list(tests=tests, lag=lag, beta=x$beta, beta_sd=x$beta_sd,r2R=r2R,main=main)
 	plot_fit(dat=x$dat, opt=x$opt, settings=settings, page=page, ...)
@@ -96,16 +96,16 @@ autoplot.cv19rr <- function(object, lag=7, caption_date = Sys.Date(), rib_col = 
 
 #' @rdname cv19rr
 #' @export
-as.data.frame.cv19rr <- function(x, row.names, optional, gen_time=4.7, lag=7, r2R = function(r,tau=4.7)1+tau*r, ...){
+as.data.frame.cv19rr <- function(x, row.names, optional, lag=7, r2R = function(r)1+4.7*r, ...){
 
 	if(!all(c("dat", "opt", "beta", "beta_sd") %in% names(x))){
 		stop("Invalid cv19rr object")
 	}
 
 	rv <- data.frame(Date = x$dat$Date[-1]-lag,
-                         R = r2R(x$opt$est$r, gen_time),
-                         UCI = r2R(x$opt$est$r+x$opt$sd$r, gen_time),
-                         LCI = r2R(x$opt$est$r-x$opt$sd$r, gen_time)
+                         R = r2R(x$opt$est$r),
+                         UCI = r2R(x$opt$est$r+x$opt$sd$r),
+                         LCI = r2R(x$opt$est$r-x$opt$sd$r)
                          )
 
 	return(rv)

@@ -44,8 +44,9 @@ setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
                              ), setup)
 
 	fixed <- as.factor(NA)
-	map <- list(logrzeta=fixed)
 
+	map <- list(logrzeta=fixed)
+        
 	if(!cv19_private$dynmod_loaded){
 		ss <- try( library.dynam("Covid19RR", "Covid19RR", .libPaths()) )
 		if(inherits(ss, "try-error")) stop("An error occured when loading the DLL")
@@ -70,11 +71,11 @@ fit <- function(obj, fix=NULL, silent=FALSE)
                      print_level=if(silent) 0 else 3,
                      local_opts= list(algorithm="NLOPT_LD_AUGLAG_EQ",xtol_rel=1e-4))
 
-	lb <- c(0,-10,log(1))
+        lb <- c(0,-10,log(1))
 	ub <- c(1,0,log(100))
 
 	fix.indeces <- names(obj$par) %in% names(fix)
-	obj$par[fix.indeces] <- fix[names(fix) %in% names(obj$par)]
+	obj$par[names(fix)] <- fix
 	if(any(!names(fix) %in% names(obj$par))){
 		warning("The following invalid fix names were ignored: ", names(fix)[!names(fix) %in% names(obj$par)])
 	}
@@ -94,7 +95,7 @@ fit <- function(obj, fix=NULL, silent=FALSE)
 		pp[!fix.indeces] <- p
 		return(obj$gr(pp)[!fix.indeces])
 	}
-
+        
 	opt <- nloptr(par,fn,gr,lb=lb[!fix.indeces],ub=ub[!fix.indeces],opts=opts)
 	names(opt$solution) <- names(obj$par[!fix.indeces])
 	rep <- sdreport(obj)
