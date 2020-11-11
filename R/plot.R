@@ -1,6 +1,6 @@
 #' @importFrom graphics plot par lines matplot polygon grid text
 #' @importFrom grDevices png dev.off
-plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
+plot_fit <- function(dat,opt,settings,page)
 {
 
 	## TODO: clean up pngfile and page arguments (do we need these?)
@@ -9,13 +9,11 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 	if(1 %in% page){
 		par(mfrow=c(2,2))
 		plot(dat$Date,opt$est$logI)
-		plot(dat$Date[-1],opt$est$logr*settings$gen_time+1)
+		plot(dat$Date[-1],settings$r2R(opt$est$r))
 		plot(dat$Date,opt$repest$Epos)
 		lines(dat$Date,dat$NewPositive)
 		matplot(dat$Date,cbind(dat$NewPositive,exp(opt$est$logI),dat$NotPrevPos^settings$beta),log="y",type="l")
 	}
-
-	gen_time <- settings$gen_time
 
 	my.poly <- function(x1,y1,x2=NULL,y2=NULL,...)
 	{
@@ -23,8 +21,6 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 		if(is.null(y2)) y2 <- numeric(length(y1))
 		polygon(c(x1,rev(x2)),c(y1,rev(y2)),...)
 	}
-
-	if(!is.null(pngfile)) png(filename=pngfile,width=840)
 
 	par(mfrow=c(1,2))
 	cl <- opt$est$logI - opt$sd$logI
@@ -44,8 +40,6 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 	betacu <- round(settings$beta + 2*settings$beta_sd,digits=2)
 	text(mean(dat$Date),faktor*exp(max(cu)),bquote(beta == .(betahat)~(.(betacl)*","*.(betacu))))
 
-	if(!is.null(pngfile)) png(filename="Inc-R.png",width=840)
-
 	## If we want page number 2 of plots:
 	if(2 %in% page){
 		par(mfrow=c(1,2))
@@ -59,25 +53,29 @@ plot_fit <- function(dat,opt,settings,ylim,pngfile,page)
 		lines(dat$Date,faktor*exp(opt$est$logI))
 		grid()
 
-		plot(dat$Date[-1]-settings$lag,r2R(opt$est$logr, gen_time),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=ylim)
-		cu <- opt$est$logr+opt$sd$logr
-		cl <- opt$est$logr-opt$sd$logr
-		my.poly(dat$Date[-1],r2R(cl, gen_time),y2=r2R(cu, gen_time),col="grey")
-		lines(dat$Date[-1],r2R(opt$est$logr, gen_time))
+		cu <- opt$est$r+opt$sd$r
+		cl <- opt$est$r-opt$sd$r
+
+                ylim <- range(c(settings$r2R(cl),settings$r2R(cu)))
+
+		plot(dat$Date[-1]-settings$lag,settings$r2R(opt$est$r),
+                     xlab="Dato",ylab="",main=settings$main,type="n")
+		my.poly(dat$Date[-1],settings$r2R(cl),y2=settings$r2R(cu),col="grey")
+		lines(dat$Date[-1],settings$r2R(opt$est$r))
 		grid()
 	}
 
 	## If we want page number 3 of plots:
 	if(3 %in% page){
+            cu <- settings$r2R(opt$est$r+opt$sd$r)
+            cl <- settings$r2R(opt$est$r-opt$sd$r)
 
-		plot(dat$Date[-1]-settings$lag,r2R(opt$est$r, gen_time),xlab="Dato",ylab="",main="Kontakttal R",type="n",ylim=ylim)
-		cu <- opt$est$r+opt$sd$r
-		cl <- opt$est$r-opt$sd$r
-		my.poly(dat$Date[-1],r2R(cl, gen_time),y2=r2R(cu, gen_time),col="grey")
-		lines(dat$Date[-1],r2R(opt$est$r, gen_time))
+            ylim <- range(c(cl,cu))
+
+            plot(dat$Date[-1]-settings$lag,settings$r2R(opt$est$r),xlab="Dato",ylab="",main=settings$main,type="n",ylim=ylim)
+            my.poly(dat$Date[-1],cl,y2=cu,col="grey")
+            lines(dat$Date[-1],settings$r2R(opt$est$r))
 		grid()
 
 	}
-
-	if(!is.null(pngfile)) dev.off()
 }

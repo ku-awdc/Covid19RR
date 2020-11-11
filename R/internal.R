@@ -19,8 +19,8 @@ preprocess.data <- function(dat)
 setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
 {
 	data <- list(nTests = dat$NotPrevPos,
-							 nPos = dat$NewPositive,
-							 modelswitch = 2)
+                     nPos = dat$NewPositive,
+                     modelswitch = 2)
 
 	setup <- list(
 		beta = 1,
@@ -40,8 +40,8 @@ setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
 		setup <- c(setup, parameters)
 	}
 	parameters <- c(list(logI = numeric(nrow(dat)),
-										 r = numeric(nrow(dat)-1)
-										 ), setup)
+                             r = numeric(nrow(dat)-1)
+                             ), setup)
 
 	fixed <- as.factor(NA)
 	map <- list(logrzeta=fixed)
@@ -53,9 +53,9 @@ setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
 	}
 
 	obj <- MakeADFun(data, parameters, DLL="Covid19RR",
-									 map = map,
-									 random=c("logI","r"),
-									 silent = silent)
+                         map = map,
+                         random=c("logI","r"),
+                         silent = silent)
 
 	return(obj)
 }
@@ -65,10 +65,10 @@ setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
 fit <- function(obj, fix=NULL, silent=FALSE)
 {
 	opts <- list(algorithm="NLOPT_LD_AUGLAG",
-							 xtol_abs=1e-12,
-							 maxeval=2E+4,
-							 print_level=if(silent) 0 else 3,
-							 local_opts= list(algorithm="NLOPT_LD_AUGLAG_EQ",xtol_rel=1e-4))
+                     xtol_abs=1e-12,
+                     maxeval=2E+4,
+                     print_level=if(silent) 0 else 3,
+                     local_opts= list(algorithm="NLOPT_LD_AUGLAG_EQ",xtol_rel=1e-4))
 
 	lb <- c(0,-10,log(1))
 	ub <- c(1,0,log(100))
@@ -108,5 +108,3 @@ fit <- function(obj, fix=NULL, silent=FALSE)
 	return(list(opt=opt,est=est,sd=sd,repest=repest,repsd=repsd))
 }
 
-## TODO: 4.7 is the generation time. Is this the right conversion?
-r2R <- function(r, gen_time) gen_time*r+1

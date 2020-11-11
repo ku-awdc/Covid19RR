@@ -3,7 +3,7 @@
 #'
 #' @param x An object of class cv19rr
 #' @param object An object of class cv19rr
-#' @param gen_time Generation time (growth?) parameter
+#' @param r2R function to convert daily growth rates to reproduction number
 #' @param tests Number of tests to normalise against
 #' @param lag Lag parameter
 #' @param caption_date Date to use in the caption
@@ -13,7 +13,6 @@
 #' @param y_marks Marks to show on the y axis
 #' @param ylim Limits for the y axis
 #' @param page Which page of plots to display (1, 2, 3 or multiple)
-#' @param pngfile An optional pngfile to use
 #' @param row.names Unused arguments provided for compatibility with S3 methods
 #' @param optional Unused arguments provided for compatibility with S3 methods
 #' @param ... Unused arguments provided for compatibility with S3 methods
@@ -44,15 +43,16 @@ print.cv19rr <- function(x, ...){
 
 #' @rdname cv19rr
 #' @export
-plot.cv19rr <- function(x, gen_time = 4.7, tests=50000, lag=7, ylim=c(0.5, 1.5), page = 3, pngfile=NULL, ...){
-	settings <- list(gen_time=gen_time, tests=tests, lag=lag, beta=x$beta, beta_sd=x$beta_sd)
-	plot_fit(dat=x$dat, opt=x$opt, settings=settings, ylim=ylim, page=page, pngfile=pngfile, ...)
+plot.cv19rr <- function(x, r2R = function(r) 1+4.7*r,tests=50000, lag=7, page = 3,
+                        main = "Kontakttal R",...){
+	settings <- list(tests=tests, lag=lag, beta=x$beta, beta_sd=x$beta_sd,r2R=r2R,main=main)
+	plot_fit(dat=x$dat, opt=x$opt, settings=settings, page=page, ...)
 }
 
 #' @import ggplot2
 #' @rdname cv19rr
 #' @export
-autoplot.cv19rr <- function(object, gen_time=4.7, lag=7, caption_date = Sys.Date(), rib_col = "grey85", x_by=5, xlim = c("2020-03-24", NA), y_marks = waiver(), ylim = c(NA,NA), ...){
+autoplot.cv19rr <- function(object, lag=7, caption_date = Sys.Date(), rib_col = "grey85", x_by=5, xlim = c("2020-03-24", NA), y_marks = waiver(), ylim = c(NA,NA), ...){
 
 	if(!inherits(object, "cv19rr") && inherits(object, "data.frame")){
 		df <- object
@@ -60,7 +60,7 @@ autoplot.cv19rr <- function(object, gen_time=4.7, lag=7, caption_date = Sys.Date
 			warning("Arguments gen_time and lag are ignored when object is a data frame")
 		}
 	}else{
-		df <- as.data.frame(object, gen_time=gen_time, lag=lag)
+		df <- as.data.frame(object, lag=lag)
 	}
 	if(!all(c("Date", "R", "LCI", "UCI") %in% names(df))){
 		stop("Invalid data frame: columns for Date, R, LCI and UCI must be present")
@@ -96,17 +96,17 @@ autoplot.cv19rr <- function(object, gen_time=4.7, lag=7, caption_date = Sys.Date
 
 #' @rdname cv19rr
 #' @export
-as.data.frame.cv19rr <- function(x, row.names, optional, gen_time=4.7, lag=7,  ...){
+as.data.frame.cv19rr <- function(x, row.names, optional, gen_time=4.7, lag=7, r2R = function(r,tau=4.7)1+tau*r, ...){
 
 	if(!all(c("dat", "opt", "beta", "beta_sd") %in% names(x))){
 		stop("Invalid cv19rr object")
 	}
 
 	rv <- data.frame(Date = x$dat$Date[-1]-lag,
-									 R = r2R(x$opt$est$r, gen_time),
-									 UCI = r2R(x$opt$est$r+x$opt$sd$r, gen_time),
-									 LCI = r2R(x$opt$est$r-x$opt$sd$r, gen_time)
-									 )
+                         R = r2R(x$opt$est$r, gen_time),
+                         UCI = r2R(x$opt$est$r+x$opt$sd$r, gen_time),
+                         LCI = r2R(x$opt$est$r-x$opt$sd$r, gen_time)
+                         )
 
 	return(rv)
 
