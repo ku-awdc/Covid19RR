@@ -6,6 +6,7 @@
 #' @param r2R function to convert daily growth rates to reproduction number
 #' @param tests Number of tests to normalise against
 #' @param lag Lag parameter
+#' @param main The plot title
 #' @param caption_date Date to use in the caption
 #' @param rib_col Colour for the ribbon
 #' @param x_by Increment for the date on the x axis
@@ -56,8 +57,8 @@ autoplot.cv19rr <- function(object, lag=7, caption_date = Sys.Date(), rib_col = 
 
 	if(!inherits(object, "cv19rr") && inherits(object, "data.frame")){
 		df <- object
-		if(gen_time != 4.7 || lag != 7){
-			warning("Arguments gen_time and lag are ignored when object is a data frame")
+		if(lag != 7){
+			warning("The lag argument is ignored when object is a data frame")
 		}
 	}else{
 		df <- as.data.frame(object, lag=lag)

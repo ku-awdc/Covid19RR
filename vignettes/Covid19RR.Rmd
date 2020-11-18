@@ -53,7 +53,8 @@ names(Flu2009_cv19rr) <- c("Date", "NewPositive")
 Flu2009_cv19rr$NotPrevPos <- 100
 
 res_cv19rr_flu <- estimate_cv19rr(Flu2009_cv19rr, silent=TRUE)
-plot(res_cv19rr_flu)
+# TODO: this fails
+# plot(res_cv19rr_flu)
 ```
 
 ```{r fig.height=4, fig.width=8}

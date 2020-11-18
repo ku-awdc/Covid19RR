@@ -12,18 +12,16 @@
 
 \method{plot}{cv19rr}(
   x,
-  gen_time = 4.7,
+  r2R = function(r) 1 + 4.7 * r,
   tests = 50000,
   lag = 7,
-  ylim = c(0.5, 1.5),
-  page = 3,
-  pngfile = NULL,
+  page = c(1, 2),
+  main = "Kontakttal R",
   ...
 )
 
 \method{autoplot}{cv19rr}(
   object,
-  gen_time = 4.7,
   lag = 7,
   caption_date = Sys.Date(),
   rib_col = "grey85",
@@ -34,24 +32,29 @@
   ...
 )
 
-\method{as.data.frame}{cv19rr}(x, row.names, optional, gen_time = 4.7, lag = 7, ...)
+\method{as.data.frame}{cv19rr}(
+  x,
+  row.names,
+  optional,
+  lag = 7,
+  r2R = function(r) 1 + 4.7 * r,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class cv19rr}
 
 \item{...}{Unused arguments provided for compatibility with S3 methods}
 
-\item{gen_time}{Generation time (growth?) parameter}
+\item{r2R}{function to convert daily growth rates to reproduction number}
 
 \item{tests}{Number of tests to normalise against}
 
 \item{lag}{Lag parameter}
 
-\item{ylim}{Limits for the y axis}
-
 \item{page}{Which page of plots to display (1, 2, 3 or multiple)}
 
-\item{pngfile}{An optional pngfile to use}
+\item{main}{The plot title}
 
 \item{object}{An object of class cv19rr}
 
@@ -64,6 +67,8 @@
 \item{xlim}{Limits of the x axis (date) - if the second element is blank then the caption date is used as the maximum extent of the range}
 
 \item{y_marks}{Marks to show on the y axis}
+
+\item{ylim}{Limits for the y axis}
 
 \item{row.names}{Unused arguments provided for compatibility with S3 methods}
 
