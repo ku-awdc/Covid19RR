@@ -15,7 +15,7 @@
 #' dat <- download_data()
 #'
 #' @export
-estimate_cv19rr <- function(dat, parameters=NULL, fix=NULL, silent=FALSE, ...){
+estimate_cv19rr <- function(dat, parameters=NULL, fix=NULL, silent=FALSE, RefTests = 50000,...){
 
 	## TODO: better argument checks
 
@@ -25,7 +25,7 @@ estimate_cv19rr <- function(dat, parameters=NULL, fix=NULL, silent=FALSE, ...){
 	dots <- list(...)
 	if(length(dots)>0) warning("Unused argument ignored")
 
-	obj <- setup.TMB.object(dat, parameters=parameters, silent=silent)
+	obj <- setup.TMB.object(dat, parameters=parameters, silent=silent, RefTests=RefTests)
 	opt <- fit(obj, fix=fix, silent=silent)
 
 	# If beta was fixed:
@@ -38,7 +38,7 @@ estimate_cv19rr <- function(dat, parameters=NULL, fix=NULL, silent=FALSE, ...){
 		beta_sd <- opt$sd$beta
 	}
 
-	rv <- list(dat=dat, opt=opt, beta=beta, beta_sd=beta_sd)
+	rv <- list(obj=obj, dat=dat, opt=opt, beta=beta, beta_sd=beta_sd)
 	class(rv) <- "cv19rr"
 
 	return(rv)

@@ -30,16 +30,13 @@ Imports:
     nloptr,
     zip,
     ggplot2,
-    readr,
-    shiny
+    readr
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
     spelling,
     EpiEstim,
-    shinydashboard,
-    plotly,
-    shinyWidgets
+    plotly
 VignetteBuilder: knitr
 Language: en-GB

@@ -42,12 +42,55 @@ print.cv19rr <- function(x, ...){
 	cat("TODO: print method")
 }
 
+#' @importFrom graphics plot par lines matplot polygon grid text
+#' @importFrom grDevices png dev.off
+
 #' @rdname cv19rr
 #' @export
-plot.cv19rr <- function(x, r2R = function(r) 1+4.7*r,tests=50000, lag=7, page = c(1,2),
+plot.cv19rr <- function(x, page = c(1,2),
                         main = "Kontakttal R",...){
-	settings <- list(tests=tests, lag=lag, beta=x$beta, beta_sd=x$beta_sd,r2R=r2R,main=main)
-	plot_fit(dat=x$dat, opt=x$opt, settings=settings, page=page, ...)
+    df <- as.data.frame(x,...)
+
+    dat <- x$dat
+
+    my.poly <- function(x1,y1,x2=NULL,y2=NULL,...)
+    {
+        if(is.null(x2)) x2 <- x1
+        if(is.null(y2)) y2 <- numeric(length(y1))
+        polygon(c(x1,rev(x2)),c(y1,rev(y2)),...)
+    }
+
+    par(mfrow=c(1,length(page)))
+    
+    ## Plot of corrected number of positive tests
+    if(1 %in% page)
+    {
+        tyl <- range(c(df$CorrPos.LCI,df$CorrPos.UCI))
+        plot(dat$Date,df$CorrPos,type="n",ylim=tyl,xlab="Dato",ylab="",log="",
+             main=paste0("Antal positive ved ",
+                         format(x$obj$data$RefTests, big.mark=".", decimal.mark=","), " daglige tests"))
+        my.poly(df$Date,df$CorrPos.LCI,y2=df$CorrPos.UCI,col="grey")
+        lines(df$Date,df$CorrPos)
+        grid()
+        betahat <- round(x$beta,digits=2)
+        betacl <- round(x$beta - 2*x$beta_sd,digits=2)
+        betacu <- round(x$beta + 2*x$beta_sd,digits=2)
+        text(mean(dat$Date),max(df$CorrPos.UCI),bquote(beta == .(betahat)~(.(betacl)*","*.(betacu))))
+    }
+    
+    ## If we want page number 2 of plots:
+    ## Plot of reproduction number
+    if(2 %in% page){
+        cu <- df$R.UCI
+        cl <- df$R.LCI
+
+        ylim <- range(c(cl,cu),na.rm=TRUE)
+
+        plot(df$Date,df$R,xlab="Dato",ylab="",main=main,type="n",ylim=ylim)
+        my.poly(df$Date,cl,y2=cu,col="grey")
+        lines(df$Date,df$R)
+        grid()
+    }
 }
 
 #' @import ggplot2
@@ -97,19 +140,24 @@ autoplot.cv19rr <- function(object, lag=7, caption_date = Sys.Date(), rib_col = 
 
 #' @rdname cv19rr
 #' @export
-as.data.frame.cv19rr <- function(x, row.names, optional, lag=7, r2R = function(r)1+4.7*r, ...){
+as.data.frame.cv19rr <- function(x, row.names=NULL, optional=FALSE, lag=7, r2R = function(r)1+4.7*r, ...){
 
-	if(!all(c("dat", "opt", "beta", "beta_sd") %in% names(x))){
-		stop("Invalid cv19rr object")
-	}
+    if(!all(c("dat", "opt", "beta", "beta_sd") %in% names(x))){
+        stop("Invalid cv19rr object")
+    }
+    
+    rv <- data.frame(Date = x$dat$Date-lag,
+                     CorrPos = exp(x$opt$est$logI + x$beta * log(x$obj$env$data$RefTests)),
+                     CorrPos.LCI = exp(- x$opt$sd$logI + x$opt$est$logI + x$beta * log(x$obj$env$data$RefTests)),
+                     CorrPos.UCI = exp(+ x$opt$sd$logI + x$opt$est$logI + x$beta * log(x$obj$env$data$RefTests)),
+                     I = exp(x$opt$est$logI),
+                     I.LCI = exp(x$opt$est$logI - x$opt$sd$logI),
+                     I.UCI = exp(x$opt$est$logI + x$opt$sd$logI),
+                     R = c(NA,r2R(x$opt$est$r)),
+                     R.UCI = c(NA,r2R(x$opt$est$r+x$opt$sd$r)),
+                     R.LCI = c(NA,r2R(x$opt$est$r-x$opt$sd$r))
+                     )
 
-	rv <- data.frame(Date = x$dat$Date[-1]-lag,
-                         R = r2R(x$opt$est$r),
-                         UCI = r2R(x$opt$est$r+x$opt$sd$r),
-                         LCI = r2R(x$opt$est$r-x$opt$sd$r)
-                         )
-
-	return(rv)
-
+    return(rv)
 }
 

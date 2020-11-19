@@ -16,11 +16,12 @@ preprocess.data <- function(dat)
 
 
 #' @importFrom TMB MakeADFun sdreport
-setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE)
+setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE, RefTests=50000)
 {
 	data <- list(nTests = dat$NotPrevPos,
                      nPos = dat$NewPositive,
-                     modelswitch = 2)
+                     modelswitch = 2,
+                     RefTests = RefTests)
 
 	setup <- list(
 		beta = 1,

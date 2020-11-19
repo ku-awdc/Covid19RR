@@ -19,7 +19,8 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(nTests);
   DATA_VECTOR(nPos);
   DATA_INTEGER(modelswitch);
-
+  DATA_SCALAR(RefTests);
+  
   PARAMETER_VECTOR(logI);
   PARAMETER_VECTOR(r);
 
@@ -30,13 +31,15 @@ Type objective_function<Type>::operator() ()
 
   int nT = nTests.size();
 
-  vector<Type> Epos(nT);
+  vector<Type> Epos(nT);    // Expected positives
+  vector<Type> logCorrPos(nT); // Expected Corrected positives to RefTests  
 
   Type ans = 0;
 
   for(int i=0; i<nT ; ++i)
     {
       Epos(i) = exp(logI(i)+beta*log(nTests(i))); 
+      logCorrPos(i) = logI(i)+beta*log(RefTests); 
       ans -= dpois(nPos(i),Epos(i),1);
     }
 
@@ -60,6 +63,7 @@ Type objective_function<Type>::operator() ()
     }
 
   ADREPORT(Epos);
+  ADREPORT(logCorrPos);
 
   return(ans);
 }
