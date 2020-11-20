@@ -16,55 +16,48 @@ preprocess.data <- function(dat)
 
 
 #' @importFrom TMB MakeADFun sdreport
-setup.TMB.object <- function(dat, parameters=NULL, silent=FALSE, RefTests=50000)
+setup.TMB.object <- function(dat, RefTests=50000, beta = NA, logIsigma = NA, logtau = NA)
 {
 	data <- list(nTests = dat$NotPrevPos,
                      nPos = dat$NewPositive,
                      modelswitch = 2,
                      RefTests = RefTests)
 
-	setup <- list(
-		beta = 1,
-		logIsigma = -8,
-		logtau = log(10),
-		logrzeta = log(1)
+	defaults <- c(
+            beta = 1,
+            logIsigma = -8,
+            logtau = log(10),
+            logrzeta = 0
 	)
 
-	if(!is.null(parameters)){
-		if(any(!names(parameters) %in% names(setup))){
-			warning("The following invalid parameter names were ignored: ", names(parameters)[!names(parameters) %in% names(setup)])
-			parameters <- parameters[names(parameters) %in% names(setup)]
-		}
-		stopifnot(all(names(parameters) %in% names(setup)))
-
-		setup[names(setup) %in% names(parameters)] <- NULL
-		setup <- c(setup, parameters)
-	}
-	parameters <- c(list(logI = numeric(nrow(dat)),
-                             r = numeric(nrow(dat)-1)
-                             ), setup)
+        
+	parameters <- c(beta=beta, logIsigma = logIsigma, logtau = logtau,logrzeta=NA)
 
 	fixed <- as.factor(NA)
 
-	map <- list(logrzeta=fixed)
-        
+	map <-  lapply(as.list(parameters[!is.na(parameters)]),function(x)x[1]<-fixed)
+
+        parameters[is.na(parameters)] <- defaults[is.na(parameters)]
+
 	if(!cv19_private$dynmod_loaded){
 		ss <- try( library.dynam("Covid19RR", "Covid19RR", .libPaths()) )
 		if(inherits(ss, "try-error")) stop("An error occured when loading the DLL")
 		cv19_private$dynmod_loaded <- TRUE
 	}
 
+        parameters <- c(list(logI=numeric(nrow(dat)),r=numeric(nrow(dat)-1)),as.list(parameters))
+        
 	obj <- MakeADFun(data, parameters, DLL="Covid19RR",
                          map = map,
                          random=c("logI","r"),
-                         silent = silent)
+                         silent = TRUE)
 
 	return(obj)
 }
 
 
 #' @importFrom nloptr nloptr
-fit <- function(obj, fix=NULL, silent=FALSE)
+fit.TMB.object <- function(obj, silent=TRUE)
 {
 	opts <- list(algorithm="NLOPT_LD_AUGLAG",
                      xtol_abs=1e-12,
@@ -72,41 +65,22 @@ fit <- function(obj, fix=NULL, silent=FALSE)
                      print_level=if(silent) 0 else 3,
                      local_opts= list(algorithm="NLOPT_LD_AUGLAG_EQ",xtol_rel=1e-4))
 
-        lb <- c(0,-10,log(1))
-	ub <- c(1,0,log(100))
+        lb <- c(beta=0,logIsigma=-10,logtau=log(1),logrzeta=-10)
+        ub <- c(beta=1,logIsigma=0,logtau=log(100),logrzeta=10)
 
-	fix.indeces <- names(obj$par) %in% names(fix)
-	obj$par[names(fix)] <- fix
-	if(any(!names(fix) %in% names(obj$par))){
-		warning("The following invalid fix names were ignored: ", names(fix)[!names(fix) %in% names(obj$par)])
-	}
+	fix.indeces <- !(names(lb) %in% names(obj$par))
 
-	par <- obj$par[!fix.indeces]
+        fn <- function(p) obj$fn(p)
+        gr <- function(p) obj$gr(p)
 
-	fn <- function(p)
-	{
-		pp <- obj$par
-		pp[!fix.indeces] <- p
-		return(obj$fn(pp))
-	}
+	opt <- nloptr(obj$par,fn,gr,lb=lb[!fix.indeces],ub=ub[!fix.indeces],opts=opts)
 
-	gr <- function(p)
-	{
-		pp <- obj$par
-		pp[!fix.indeces] <- p
-		return(obj$gr(pp)[!fix.indeces])
-	}
-        
-	opt <- nloptr(par,fn,gr,lb=lb[!fix.indeces],ub=ub[!fix.indeces],opts=opts)
 	names(opt$solution) <- names(obj$par[!fix.indeces])
 	rep <- sdreport(obj)
 
 	est <- as.list(rep,"Est")
 	sd <- as.list(rep,"Std")
 
-	repest <- as.list(rep,"Est",report=TRUE)
-	repsd <- as.list(rep,"Std",report=TRUE)
-
-	return(list(opt=opt,est=est,sd=sd,repest=repest,repsd=repsd))
+	return(list(opt=opt,est=est,sd=sd))
 }
 

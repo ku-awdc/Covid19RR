@@ -15,31 +15,17 @@
 #' dat <- download_data()
 #'
 #' @export
-estimate_cv19rr <- function(dat, parameters=NULL, fix=NULL, silent=FALSE, RefTests = 50000,...){
+estimate_cv19rr <- function(dat, RefTests=50000, beta = NA, logIsigma = NA, logtau = NA,fix=NULL){
 
-	## TODO: better argument checks
+    if(!is.null(fix)) for(i in 1:length(fix)) assign(names(fix)[[i]],fix[[i]])
+    
+    obj <- setup.TMB.object(dat, RefTests=RefTests, beta = beta,
+                            logIsigma = logIsigma, logtau = logtau)
 
-	if(!is.null(parameters) && !is.list(parameters)) stop("Invalid parameters argument (must be a list)")
-	if(!is.null(fix) && !is.numeric(fix)) stop("Invalid fix argument (must be a numeric vector)")
+    fit <- fit.TMB.object(obj)
 
-	dots <- list(...)
-	if(length(dots)>0) warning("Unused argument ignored")
+    rv <- c(list(dat=dat, obj=obj), fit)
+    class(rv) <- "cv19rr"
 
-	obj <- setup.TMB.object(dat, parameters=parameters, silent=silent, RefTests=RefTests)
-	opt <- fit(obj, fix=fix, silent=silent)
-
-	# If beta was fixed:
-	if("beta" %in% names(fix)){
-		beta <- fix["beta"]
-		beta_sd <- 0
-	# Otherwise:
-	}else{
-		beta <- opt$opt$solution["beta"]
-		beta_sd <- opt$sd$beta
-	}
-
-	rv <- list(obj=obj, dat=dat, opt=opt, beta=beta, beta_sd=beta_sd)
-	class(rv) <- "cv19rr"
-
-	return(rv)
+    return(rv)
 }

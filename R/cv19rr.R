@@ -68,14 +68,21 @@ plot.cv19rr <- function(x, page = c(1,2),
         tyl <- range(c(df$CorrPos.LCI,df$CorrPos.UCI))
         plot(dat$Date,df$CorrPos,type="n",ylim=tyl,xlab="Dato",ylab="",log="",
              main=paste0("Antal positive ved ",
-                         format(x$obj$data$RefTests, big.mark=".", decimal.mark=","), " daglige tests"))
-        my.poly(df$Date,df$CorrPos.LCI,y2=df$CorrPos.UCI,col="grey")
-        lines(df$Date,df$CorrPos)
+                         format(x$obj$env$data$RefTests, big.mark=".", decimal.mark=","), " daglige tests"))
+        betahat <- round(x$est$beta,digits=2)
+        beta_sd <- x$sd$beta
+        if(is.finite(beta_sd))
+        {
+            betacl <- round(x$est$beta - 2*beta_sd,digits=2)
+            betacu <- round(x$est$beta + 2*beta_sd,digits=2)
+            
+            text(mean(dat$Date),max(df$CorrPos.UCI),bquote(beta == .(betahat)~(.(betacl)*","*.(betacu))))
+
+            my.poly(df$Date,df$CorrPos.LCI,y2=df$CorrPos.UCI,col="grey")
+        } else text(mean(dat$Date),max(df$CorrPos.UCI),bquote(beta == .(betahat)))
+
+        lines(df$Date,df$CorrPos,lwd=2)
         grid()
-        betahat <- round(x$beta,digits=2)
-        betacl <- round(x$beta - 2*x$beta_sd,digits=2)
-        betacu <- round(x$beta + 2*x$beta_sd,digits=2)
-        text(mean(dat$Date),max(df$CorrPos.UCI),bquote(beta == .(betahat)~(.(betacl)*","*.(betacu))))
     }
     
     ## If we want page number 2 of plots:
@@ -142,20 +149,20 @@ autoplot.cv19rr <- function(object, lag=7, caption_date = Sys.Date(), rib_col = 
 #' @export
 as.data.frame.cv19rr <- function(x, row.names=NULL, optional=FALSE, lag=7, r2R = function(r)1+4.7*r, ...){
 
-    if(!all(c("dat", "opt", "beta", "beta_sd") %in% names(x))){
+    if(!all(c("dat", "opt") %in% names(x))){
         stop("Invalid cv19rr object")
     }
     
     rv <- data.frame(Date = x$dat$Date-lag,
-                     CorrPos = exp(x$opt$est$logI + x$beta * log(x$obj$env$data$RefTests)),
-                     CorrPos.LCI = exp(- x$opt$sd$logI + x$opt$est$logI + x$beta * log(x$obj$env$data$RefTests)),
-                     CorrPos.UCI = exp(+ x$opt$sd$logI + x$opt$est$logI + x$beta * log(x$obj$env$data$RefTests)),
-                     I = exp(x$opt$est$logI),
-                     I.LCI = exp(x$opt$est$logI - x$opt$sd$logI),
-                     I.UCI = exp(x$opt$est$logI + x$opt$sd$logI),
-                     R = c(NA,r2R(x$opt$est$r)),
-                     R.UCI = c(NA,r2R(x$opt$est$r+x$opt$sd$r)),
-                     R.LCI = c(NA,r2R(x$opt$est$r-x$opt$sd$r))
+                     CorrPos = exp(x$est$logI + x$est$beta * log(x$obj$env$data$RefTests)),
+                     CorrPos.LCI = exp(- x$sd$logI + x$est$logI + x$est$beta * log(x$obj$env$data$RefTests)),
+                     CorrPos.UCI = exp(+ x$sd$logI + x$est$logI + x$est$beta * log(x$obj$env$data$RefTests)),
+                     I = exp(x$est$logI),
+                     I.LCI = exp(x$est$logI - x$sd$logI),
+                     I.UCI = exp(x$est$logI + x$sd$logI),
+                     R = c(NA,r2R(x$est$r)),
+                     R.UCI = c(NA,r2R(x$est$r+x$sd$r)),
+                     R.LCI = c(NA,r2R(x$est$r-x$sd$r))
                      )
 
     return(rv)

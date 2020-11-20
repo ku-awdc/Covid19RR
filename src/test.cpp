@@ -39,7 +39,6 @@ Type objective_function<Type>::operator() ()
   for(int i=0; i<nT ; ++i)
     {
       Epos(i) = exp(logI(i)+beta*log(nTests(i))); 
-      logCorrPos(i) = logI(i)+beta*log(RefTests); 
       ans -= dpois(nPos(i),Epos(i),1);
     }
 
@@ -61,9 +60,6 @@ Type objective_function<Type>::operator() ()
 	  break;
 	}
     }
-
-  ADREPORT(Epos);
-  ADREPORT(logCorrPos);
 
   return(ans);
 }

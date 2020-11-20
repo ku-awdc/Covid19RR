@@ -52,13 +52,12 @@ names(Flu2009_cv19rr) <- c("Date", "NewPositive")
 # Make up a constant:
 Flu2009_cv19rr$NotPrevPos <- 100
 
-res_cv19rr_flu <- estimate_cv19rr(Flu2009_cv19rr, silent=TRUE)
-# TODO: this fails
-# plot(res_cv19rr_flu)
+res_cv19rr_flu <- estimate_cv19rr(Flu2009_cv19rr,beta=0)
+plot(res_cv19rr_flu)
 ```
 
 ```{r fig.height=4, fig.width=8}
-res_cv19rr_cv19 <- estimate_cv19rr(cv19dat, silent=TRUE)
+res_cv19rr_cv19 <- estimate_cv19rr(cv19dat,logtau=log(7))
 plot(res_cv19rr_cv19)
 ```
 
