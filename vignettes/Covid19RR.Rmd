@@ -14,6 +14,51 @@ knitr::opts_chunk$set(
 )
 ```
 
+## COVID-19 in Denmark
+
+```{r fig.height=6, fig.width=8}
+library("Covid19RR")
+cv19dat <- download_data()
+Tref <- 70000  # Reference tests
+mod <- estimate_cv19rr(cv19dat,RefTests=Tref,logtau=log(7))
+plot(mod)
+```
+
+
+## With Epiestim
+
+```{r fig.height=8, fig.width=6}
+library("EpiEstim")
+cv19dat$dates <- cv19dat$Date
+cv19dat$I <- cv19dat$NewPositive
+res_epiestim_cv19 <- estimate_R(cv19dat,
+                           method="parametric_si",
+                           config = make_config(list(
+                                  mean_si = 2.6, 
+                                  std_si = 1.5))
+)
+plot(res_epiestim_cv19)                           
+```
+
+
+## Flu2009
+
+
+```{r  fig.height=6, fig.width=8}
+library("Covid19RR")
+library("EpiEstim")
+data(Flu2009)
+
+Flu2009_cv19rr <- Flu2009$incidence
+names(Flu2009_cv19rr) <- c("Date", "NewPositive")
+# Make up a constant:
+Flu2009_cv19rr$NotPrevPos <- 100
+
+res_cv19rr_flu <- estimate_cv19rr(Flu2009_cv19rr,beta=0)
+plot(res_cv19rr_flu)
+```
+
+
 ## Estimation using EpiEstim:
 
 ```{r fig.height=8, fig.width=6}
@@ -28,36 +73,3 @@ res_epiestim_flu <- estimate_R(Flu2009$incidence,
 )
 plot(res_epiestim_flu)
 ```
-
-```{r fig.height=8, fig.width=6}
-cv19dat <- Covid19RR::download_data()
-cv19dat$dates <- cv19dat$Date
-cv19dat$I <- cv19dat$NewPositive
-res_epiestim_cv19 <- estimate_R(cv19dat,
-                           method="parametric_si",
-                           config = make_config(list(
-                                  mean_si = 2.6, 
-                                  std_si = 1.5))
-)
-plot(res_epiestim_cv19)                           
-```
-
-## Estimation using the new R package:
-
-```{r}
-library("Covid19RR")
-
-Flu2009_cv19rr <- Flu2009$incidence
-names(Flu2009_cv19rr) <- c("Date", "NewPositive")
-# Make up a constant:
-Flu2009_cv19rr$NotPrevPos <- 100
-
-res_cv19rr_flu <- estimate_cv19rr(Flu2009_cv19rr,beta=0)
-plot(res_cv19rr_flu)
-```
-
-```{r fig.height=4, fig.width=8}
-res_cv19rr_cv19 <- estimate_cv19rr(cv19dat,logtau=log(7))
-plot(res_cv19rr_cv19)
-```
-

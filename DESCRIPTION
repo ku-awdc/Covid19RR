@@ -2,16 +2,15 @@ Package: Covid19RR
 Title: Estimation of Reproduction Rates for the COVID-19 Pandemic in Denmark based on Publicly Available Data
 Version: 0.3.4-2
 Date: 2020-11-18
-Authors@R: 
-    c(person(given = "Uffe",
-           family = "Thygesen",
-           role = c("aut"),
-           email = "uhth@dtu.dk"),
-    person(given = "Matt",
-           family = "Denwood",
-           role = c("aut", "cre"),
-           email = "md@sund.ku.dk")
-    )
+Authors@R: c(person(given = "Uffe",
+                    family = "Thygesen",
+           	    role = c("aut"),
+           	    email = "uhth@dtu.dk"),
+             person(given = "Matt",
+             family = "Denwood",
+             role = c("aut", "cre"),
+             email = "md@sund.ku.dk")
+             )
 Description: Implementation of a model used by the expert modelling group for use
             by SSI and others.
 License: GPL-3
