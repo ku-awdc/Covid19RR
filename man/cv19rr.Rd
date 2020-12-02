@@ -10,15 +10,7 @@
 \usage{
 \method{print}{cv19rr}(x, ...)
 
-\method{plot}{cv19rr}(
-  x,
-  r2R = function(r) 1 + 4.7 * r,
-  tests = 50000,
-  lag = 7,
-  page = c(1, 2),
-  main = "Kontakttal R",
-  ...
-)
+\method{plot}{cv19rr}(x, page = c(1, 2), main = "Kontakttal R", ...)
 
 \method{autoplot}{cv19rr}(
   object,
@@ -34,8 +26,8 @@
 
 \method{as.data.frame}{cv19rr}(
   x,
-  row.names,
-  optional,
+  row.names = NULL,
+  optional = FALSE,
   lag = 7,
   r2R = function(r) 1 + 4.7 * r,
   ...
@@ -46,17 +38,13 @@
 
 \item{...}{Unused arguments provided for compatibility with S3 methods}
 
-\item{r2R}{function to convert daily growth rates to reproduction number}
-
-\item{tests}{Number of tests to normalise against}
-
-\item{lag}{Lag parameter}
-
 \item{page}{Which page of plots to display (1, 2, 3 or multiple)}
 
 \item{main}{The plot title}
 
 \item{object}{An object of class cv19rr}
+
+\item{lag}{Lag parameter}
 
 \item{caption_date}{Date to use in the caption}
 
@@ -73,6 +61,10 @@
 \item{row.names}{Unused arguments provided for compatibility with S3 methods}
 
 \item{optional}{Unused arguments provided for compatibility with S3 methods}
+
+\item{r2R}{function to convert daily growth rates to reproduction number}
+
+\item{tests}{Number of tests to normalise against}
 }
 \description{
 S3 methods for the cv19rr class

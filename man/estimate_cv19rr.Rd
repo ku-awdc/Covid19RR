@@ -4,14 +4,21 @@
 \alias{estimate_cv19rr}
 \title{Estimation of RR}
 \usage{
-estimate_cv19rr(dat, parameters = NULL, fix = NULL, silent = FALSE, ...)
+estimate_cv19rr(
+  dat,
+  RefTests = 50000,
+  beta = NA,
+  logIsigma = NA,
+  logtau = NA,
+  fix = NULL
+)
 }
 \arguments{
 \item{dat}{Incidence data}
 
-\item{parameters}{Option to override the default parameter values}
-
 \item{fix}{Option to override the default fixed values}
+
+\item{parameters}{Option to override the default parameter values}
 
 \item{silent}{Option to suppress messages during fitting}
 
