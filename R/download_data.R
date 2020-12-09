@@ -1,7 +1,7 @@
 #' Title
 #'
 #' @param preprocess Should the downloaded data be processed automatically?
-#'
+#' @param dir Name of directory to download to. If NULL, which is the default, a temporary directory is created and used
 #' @return dataset
 #'
 #' #TODO clean up tempfile
@@ -13,7 +13,7 @@
 #' @importFrom readr read_delim locale
 #'
 #' @export
-download_data <- function(preprocess=TRUE)
+download_data <- function(preprocess=TRUE,dir=NULL)
 {
     url <- "https://covid19.ssi.dk/overvagningsdata/download-fil-med-overvaagningdata"
     webpage <- read_html(url)
@@ -24,9 +24,17 @@ download_data <- function(preprocess=TRUE)
     MostRecentFile <- urls[[MostRecentFileNr]]
 
 
-    td <- tempdir()
-    download.file(MostRecentFile,file.path(td, "data.zip"))
+    if(is.null(dir))
+    {
+        td <- tempdir()
+    } else {
+        td <- dir
+        if(!file.exists(td)) dir.create(td)
+    }
 
+    ## TODO : On at least one windows machine, the flag mode="wb" must be added - this maybe sets write permissions?
+    download.file(MostRecentFile,file.path(td, "data.zip"))
+        
     unzip(file.path(td, "data.zip"), exdir=file.path(td,"data"))
     text <- gsub(" ", "", readLines(file.path(td, "data/Test_pos_over_time.csv")))
     dat <- read_delim(paste(text, collapse='\n'), delim=";", locale=locale(decimal_mark=",", grouping_mark='.'))
