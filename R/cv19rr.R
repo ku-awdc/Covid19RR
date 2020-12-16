@@ -48,7 +48,8 @@ print.cv19rr <- function(x, ...){
 #' @rdname cv19rr
 #' @export
 plot.cv19rr <- function(x, page = c(1,2),
-                        main = "Kontakttal R",...){
+                        language = c("danish","english"),
+                        main = NULL,...){
     df <- as.data.frame(x,...)
 
     dat <- x$dat
@@ -61,14 +62,26 @@ plot.cv19rr <- function(x, page = c(1,2),
     }
 
     par(mfrow=c(1,length(page)))
+
+    if(language=="danish")
+        strs <- list(Number="Antal positive ved ",
+                     Daily=" daglige tests",
+                     R="Kontaktal R")
+    
+    if(language=="english")
+        strs <- list(Number="New cases with ",
+                     Daily=" daily tests",
+                     R="Reproductive number R")
+
+    if(!is.null(main)) strs$R <- main
     
     ## Plot of corrected number of positive tests
     if(1 %in% page)
     {
         tyl <- range(c(df$CorrPos.LCI,df$CorrPos.UCI))
-        plot(dat$Date,df$CorrPos,type="n",ylim=tyl,xlab="Dato",ylab="",log="",
-             main=paste0("Antal positive ved ",
-                         format(x$obj$env$data$RefTests, big.mark=".", decimal.mark=","), " daglige tests"))
+        plot(dat$Date,df$CorrPos,type="n",ylim=tyl,xlab="",ylab="",log="",
+             main=paste0(strs$Number,
+                         format(x$obj$env$data$RefTests, big.mark=".", decimal.mark=","), strs$Daily))
         betahat <- round(x$est$beta,digits=2)
         beta_sd <- x$sd$beta
         if(is.finite(beta_sd))
@@ -93,7 +106,7 @@ plot.cv19rr <- function(x, page = c(1,2),
 
         ylim <- range(c(cl,cu),na.rm=TRUE)
 
-        plot(df$Date,df$R,xlab="Dato",ylab="",main=main,type="n",ylim=ylim)
+        plot(df$Date,df$R,xlab="",ylab="",main=strs$R,type="n",ylim=ylim)
         my.poly(df$Date,cl,y2=cu,col="grey")
         lines(df$Date,df$R)
         grid()
