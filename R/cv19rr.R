@@ -71,7 +71,7 @@ plot.cv19rr <- function(x, page = c(1,2),
     if(language=="english")
         strs <- list(Number="New cases with ",
                      Daily=" daily tests",
-                     R="Reproductive number R")
+                     R="Reproduction number R")
 
     if(!is.null(main)) strs$R <- main
     
