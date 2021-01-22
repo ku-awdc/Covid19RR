@@ -39,16 +39,25 @@
 #' @rdname cv19rr
 #' @export
 print.cv19rr <- function(x, ...){
-	cat("TODO: print method")
+	cat("TODO: print method. \n ")
 }
 
 #' @importFrom graphics plot par lines matplot polygon grid text
 #' @importFrom grDevices png dev.off
 
+#' @name plot.cv19rr
+#' @title Plot a fitted cv19rr model
+#'
+#' @param x A model fitted with cv19rr::estimate_cv19rr
+#' @param page Plot page 1 or 2 or both. Defaults to c(1,2)
+#' @param language "danish" (default) or "english"
+#' @param main Optional main title of plot. Defaults to NULL, in which case it is determined by the language
+#' @param ... Options arguments transferred to confidence regions, e.g. color
+#' 
 #' @rdname cv19rr
 #' @export
 plot.cv19rr <- function(x, page = c(1,2),
-                        language = c("danish","english"),
+                        language = c("danish"),
                         main = NULL,...){
     df <- as.data.frame(x,...)
 
