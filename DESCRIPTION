@@ -1,7 +1,7 @@
 Package: Covid19RR
 Title: Estimation of Reproduction Rates for the COVID-19 Pandemic in Denmark based on Publicly Available Data
-Version: 0.3.4-2
-Date: 2020-11-18
+Version: 0.3.5-1
+Date: 2021-01-28
 Authors@R: c(person(given = "Uffe",
                     family = "Thygesen",
            	    role = c("aut"),
